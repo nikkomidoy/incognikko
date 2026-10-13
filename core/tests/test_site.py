@@ -14,7 +14,7 @@ def test_home_renders_seeded_resume(client):
     assert HomePage.objects.live().count() == 1
     assert Experience.objects.count() == 6
     html = client.get("/").text
-    assert "Nikko Comidoy" in html and "Prezzee" in html
+    assert "Nikko Comidoy" in html and "Prezzee" in html and "Work Experience" in html
 
 
 @pytest.mark.django_db

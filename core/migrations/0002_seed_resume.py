@@ -1,4 +1,6 @@
-"""Seed the Wagtail page tree with the 2026 resume and the privacy page.
+"""Seed the Wagtail page tree with the resume and the privacy page.
+
+Resume text comes from core/resume_content.py (shared with `manage.py load_resume`).
 
 Replaces Wagtail's default "Welcome" page with a HomePage at the site root. Runs once;
 skipped if a HomePage already exists. Everything is editable afterwards in /admin/.
@@ -11,129 +13,7 @@ from datetime import date
 from django.db import migrations
 from django.utils import timezone
 
-SUMMARY = """Software engineer with 11+ years building and maintaining web applications, \
-including 5+ years working on Prezzee's global platform. Focused on Python, Django, backend \
-services, APIs, integrations, and practical automation.
-
-Brings feature development and full-stack experience together with deep knowledge of how \
-applications behave in production. Works with product and engineering teams to turn \
-requirements and recurring problems into maintainable code."""
-
-EXPERIENCES = [
-    {
-        "company": "Deel Inc.",
-        "client": "Prezzee",
-        "role": "Applications Development and Support Engineer",
-        "location": "Kitchener, Ontario (remote)",
-        "start_date": date(2023, 2, 1),
-        "end_date": date(2026, 9, 30),
-        "summary": "Continued five years of work on Prezzee's platform, combining application "
-        "development, backend maintenance, automation, and production problem solving.",
-        "highlights": "\n".join(
-            [
-                "Built Python tools and workflow automation for large data requests and repetitive processes, reducing manual work and making results easier to deliver.",
-                "Developed and maintained application code and backend workflows for business-critical services, translating operational needs into software changes.",
-                "Investigated defects in customer-facing services and implemented fixes and improvements with Engineering and Product partners.",
-                "Worked with APIs, application data, and integrations to trace issues across services and support reliable end-to-end behavior.",
-                "Used production findings to prioritize code fixes and preventative improvements; contributed to releases and post-release troubleshooting.",
-            ]
-        ),
-    },
-    {
-        "company": "Prezzee",
-        "client": "engaged through Yempo",
-        "role": "Software Engineer",
-        "location": "Manila, Philippines",
-        "start_date": date(2021, 8, 1),
-        "end_date": date(2023, 1, 31),
-        "summary": "Developed and maintained applications and backend services for Prezzee's "
-        "business-critical workflows.",
-        "highlights": "\n".join(
-            [
-                "Developed Python/Django application features and maintained backend services used by Prezzee teams.",
-                "Built and supported REST APIs and service integrations using Python, Django, SQL, Redis, and GraphQL.",
-                "Delivered bug fixes and enhancements by tracing behavior through application code, data, and connected services.",
-                "Collaborated with developers and Product to translate requirements and production feedback into application improvements.",
-                "Tested and debugged changes and maintained existing services as business needs evolved.",
-            ]
-        ),
-    },
-    {
-        "company": "ZEN Rooms",
-        "client": "",
-        "role": "Senior Python Engineer",
-        "location": "Taguig, Philippines",
-        "start_date": date(2020, 7, 1),
-        "end_date": date(2021, 3, 31),
-        "summary": "Built internal tools and backend applications for accommodation and business workflows.",
-        "highlights": "\n".join(
-            [
-                "Designed and developed Python/Django tools that automated business processes and streamlined internal workflows.",
-                "Built APIs and integrated backend services to connect existing systems and support application features.",
-                "Turned product requirements into technical solutions with engineering and cross-functional partners.",
-                "Contributed to code reviews, testing, debugging, and improvements in application maintainability.",
-            ]
-        ),
-    },
-    {
-        "company": "Thorgate Digital OÜ",
-        "client": "",
-        "role": "Software Engineer",
-        "location": "Tallinn, Estonia",
-        "start_date": date(2019, 7, 1),
-        "end_date": date(2020, 2, 29),
-        "summary": "Delivered full-stack web applications with Python, Django, and React.",
-        "highlights": "\n".join(
-            [
-                "Designed Python/Django backend services and APIs for web application features.",
-                "Built React and JavaScript interfaces and connected them to backend APIs for end-to-end functionality.",
-                "Resolved bugs across frontend and backend code and participated in reviews and testing.",
-            ]
-        ),
-    },
-    {
-        "company": "Detail Online Technology",
-        "client": "",
-        "role": "Software Developer",
-        "location": "Davao, Philippines",
-        "start_date": date(2018, 6, 1),
-        "end_date": date(2019, 5, 31),
-        "summary": "Developed software for data validation, processing, and management.",
-        "highlights": "\n".join(
-            [
-                "Designed and developed application components that validated and processed data to improve accuracy.",
-                "Translated business and technical requirements into software design and implementation work.",
-                "Debugged application and data-processing issues and contributed to testing and maintenance.",
-            ]
-        ),
-    },
-    {
-        "company": "Ingenuity Global Consulting",
-        "client": "",
-        "role": "Software Developer",
-        "location": "Davao, Philippines",
-        "start_date": date(2014, 12, 1),
-        "end_date": date(2017, 9, 30),
-        "summary": "Built software applications for multiple startup clients across changing "
-        "product requirements and technology environments.",
-        "highlights": "\n".join(
-            [
-                "Implemented web application features, integrations, and supporting services from development through deployment.",
-                "Contributed to backend and frontend development, database design, and API implementation across client projects.",
-                "Worked with clients, project managers, and developers to turn requirements into working software.",
-                "Debugged defects and delivered fixes and enhancements to improve application behavior and quality.",
-            ]
-        ),
-    },
-]
-
-SKILL_GROUPS = [
-    ("Backend", "Python, Django, REST APIs, Backend services, Celery"),
-    ("Data & integration", "SQL, Redis, GraphQL, API integrations, Data validation"),
-    ("Frontend", "React, JavaScript, TypeScript, Node.js"),
-    ("Development", "Git, GitHub, GitLab, Code review, Testing, Debugging"),
-    ("Production tools", "Datadog, Sentry, Jira, Confluence"),
-]
+from core.resume_content import EDUCATION, PROFILE, SKILL_GROUPS, experience_rows
 
 PRIVACY_POLICY = """_Last updated: October 2026_
 
@@ -217,18 +97,12 @@ def seed(apps, schema_editor):
             slug="home",
             path=root.path + "0001",
             url_path="/home/",
-            seo_title="Senior Software Engineer | Python & Django",
+            seo_title=PROFILE["headline"],
             numchild=1,
         ),
-        name="Nikko Comidoy",
-        headline="Senior Software Engineer | Python & Django",
-        location="Kitchener, Ontario",
-        email="nikkomidoy@gmail.com",
+        **PROFILE,
         show_email=True,
-        phone="",
         show_phone=False,
-        linkedin_url="https://www.linkedin.com/in/nikkocomidoy",
-        summary=SUMMARY,
     )
     Page.objects.filter(pk=root.pk).update(numchild=Page.objects.filter(depth=2).count())
     Site.objects.create(
@@ -236,29 +110,15 @@ def seed(apps, schema_editor):
     )
 
     Experience = apps.get_model("core", "Experience")
-    for i, exp in enumerate(EXPERIENCES):
+    for i, exp in enumerate(experience_rows()):
         Experience.objects.create(page=home, sort_order=i, **exp)
 
     SkillGroup = apps.get_model("core", "SkillGroup")
     for i, (name, skills) in enumerate(SKILL_GROUPS):
         SkillGroup.objects.create(page=home, sort_order=i, name=name, skills=skills)
 
-    apps.get_model("core", "Education").objects.create(
-        page=home,
-        sort_order=0,
-        school="University of Southeastern Philippines",
-        degree="Bachelor of Science in Information Technology",
-        location="Davao, Philippines",
-        start_date=date(2010, 6, 1),
-        end_date=date(2014, 4, 30),
-    )
-    apps.get_model("core", "Certification").objects.create(
-        page=home,
-        sort_order=0,
-        name="Verified International Academic Qualifications",
-        issuer="World Education Services",
-        period="Apr 2023 – Present",
-    )
+    for i, edu in enumerate(EDUCATION):
+        apps.get_model("core", "Education").objects.create(page=home, sort_order=i, **edu)
     apps.get_model("core", "ContentPage").objects.create(
         **page_fields(
             apps,
