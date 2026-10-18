@@ -115,6 +115,12 @@ SECURE_CSP_ADMIN = {
     "frame-src": [CSP.SELF],
     "frame-ancestors": [CSP.SELF],
 }
+# django-unfold (Django admin only) uses the standard Alpine.js build, which evaluates
+# its x-* expressions with `new Function`.
+SECURE_CSP_DJANGO_ADMIN = {
+    **SECURE_CSP_ADMIN,
+    "script-src": [*SECURE_CSP_ADMIN["script-src"], CSP.UNSAFE_EVAL],
+}
 # Must come after ContentSecurityPolicyMiddleware so it runs first on the response.
 MIDDLEWARE = [*MIDDLEWARE, "core.middleware.AdminCSPMiddleware"]
 

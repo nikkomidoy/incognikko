@@ -107,12 +107,21 @@ def test_send_test_email(mailoutbox):
     assert mailoutbox[0].to == ["a@example.com"]
 
 
-@pytest.mark.parametrize(("path", "relaxed"), [("/admin/pages/", True), ("/blog/", False)])
-def test_admin_csp_override(rf, settings, path, relaxed):
+@pytest.mark.parametrize(
+    ("path", "policy"),
+    [
+        ("/admin/pages/", "SECURE_CSP_ADMIN"),
+        ("/django-admin/", "SECURE_CSP_DJANGO_ADMIN"),
+        ("/blog/", None),
+    ],
+)
+def test_admin_csp_override(rf, settings, path, policy):
     from django.http import HttpResponse
 
     from core.middleware import AdminCSPMiddleware
 
     settings.SECURE_CSP_ADMIN = {"script-src": ["'unsafe-inline'"]}
+    settings.SECURE_CSP_DJANGO_ADMIN = {"script-src": ["'unsafe-inline'", "'unsafe-eval'"]}
     response = AdminCSPMiddleware(lambda request: HttpResponse())(rf.get(path))
-    assert (getattr(response, "_csp_config", None) == settings.SECURE_CSP_ADMIN) is relaxed
+    expected = getattr(settings, policy) if policy else None
+    assert getattr(response, "_csp_config", None) == expected
