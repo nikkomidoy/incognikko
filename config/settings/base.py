@@ -14,6 +14,7 @@ from pathlib import Path
 
 import environ
 import structlog
+from django.templatetags.static import static
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -33,6 +34,10 @@ DATABASES = {
 # Application definition
 
 INSTALLED_APPS = [
+    # Unfold must come before django.contrib.admin to override its templates.
+    "unfold",
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -185,6 +190,36 @@ WAGTAILDOCS_EXTENSIONS = ["pdf"]
 WAGTAIL_GRAVATAR_PROVIDER_URL = None
 WAGTAIL_ENABLE_UPDATE_CHECK = False
 WAGTAILSEARCH_BACKENDS = {"default": {"BACKEND": "wagtail.search.backends.database"}}
+
+# Django admin theme — django-unfold (teal primary matches the site's `nikko` theme)
+UNFOLD = {
+    "SITE_TITLE": "Nikko Comidoy",
+    "SITE_HEADER": "Nikko Comidoy",
+    "SITE_SUBHEADER": "Django admin",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "admin_panel_settings",
+    "SITE_FAVICONS": [
+        {"rel": "icon", "type": "image/svg+xml", "href": lambda request: static("favicon.svg")},
+    ],
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "COLORS": {
+        "primary": {
+            "50": "oklch(97.5% .015 185)",
+            "100": "oklch(94.5% .035 185)",
+            "200": "oklch(89% .06 185)",
+            "300": "oklch(82% .085 184)",
+            "400": "oklch(72% .11 182)",
+            "500": "oklch(62% .105 184)",
+            "600": "oklch(51% .09 185)",
+            "700": "oklch(44% .08 186)",
+            "800": "oklch(37% .065 187)",
+            "900": "oklch(31% .05 188)",
+            "950": "oklch(22% .04 190)",
+        },
+    },
+    "SIDEBAR": {"show_search": True, "show_all_applications": True},
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators

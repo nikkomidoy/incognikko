@@ -4,7 +4,7 @@ Personal Wagtail CMS (resume + blog) for Nikko Comidoy, with a daily blog → Fa
 
 ## Stack decisions
 
-- CMS: Wagtail — admin `/admin/` (login via allauth), Django admin `/django-admin/`; page tree Root → `core.HomePage` → `core.ContentPage` / `blog.BlogIndexPage` → `blog.BlogPostPage`; bodies are StreamField (`core/blocks.py`).
+- CMS: Wagtail — admin `/admin/` (login via allauth), Django admin `/django-admin/` (django-unfold theme; `core/admin.py` re-wraps third-party ModelAdmins); page tree Root → `core.HomePage` → `core.ContentPage` / `blog.BlogIndexPage` → `blog.BlogPostPage`; bodies are StreamField (`core/blocks.py`).
 - Settings: split — `config/settings/{base,local,production,test}.py`; `manage.py` → local, wsgi/asgi → production.
 - Database: PostgreSQL 17 (dev: host Homebrew `postgresql@17` on port 5433; prod: `postgres:17` container).
 - Request handling: WSGI, gunicorn.
@@ -25,7 +25,7 @@ Personal Wagtail CMS (resume + blog) for Nikko Comidoy, with a daily blog → Fa
 - SEO: meta/OG block in `templates/base.html` (falls back to Wagtail `seo_title` / `search_description`), Wagtail sitemap (`config/sitemaps.py`), `robots.txt` (`ROBOTS_DISALLOW_ALL`).
 - REST: django-modern-rest (msgspec) — `api/` app, `GET /api/posts/`.
 - Analytics: GoatCounter (`ANALYTICS_ID` / `ANALYTICS_HOST`), only when `not DEBUG`.
-- Security: production.py hardening + Django 6.1 built-in CSP (nonce available as `csp_nonce`); `SECURE_CSP_ADMIN` (inline scripts, same-origin frames) applied to admin paths by `core.middleware.AdminCSPMiddleware`.
+- Security: production.py hardening + Django 6.1 built-in CSP (nonce available as `csp_nonce`); `SECURE_CSP_ADMIN` (inline scripts, same-origin frames) applied to admin paths by `core.middleware.AdminCSPMiddleware`; `SECURE_CSP_DJANGO_ADMIN` adds `unsafe-eval` for Unfold's Alpine.js on `/django-admin/` only.
 - Health: `/healthz` (liveness), `/readyz` (DB).
 - Errors: Sentry (production.py, PII scrubbed).
 - GDPR: SameSite=Lax, `export_user_data` / `delete_user_data`, `core.tasks.purge_login_records`, privacy page seeded.
